@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Placement Management Login</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f4f7fb;
+    padding: 15px;
+}
+
+.login-box {
+    width: 380px;
+    max-width: 100%;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px #0003;
+}
+
+h2 {
+    text-align: center;
+    color: #172b4d;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #777;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin: 14px 0 7px;
+    font-weight: bold;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.show-password {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.show-password input {
+    width: auto;
+}
+
+.show-password label {
+    margin: 0;
+    font-weight: normal;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 22px;
+    border: none;
+    background: #1769aa;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background: #124c7c;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#message {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.login-link {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.login-link a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+    <h2>Placement Management</h2>
+    <p class="subtitle">Login to Your Account</p>
+
+    <form id="loginForm">
+
+        <label>Select Login Type</label>
+        <select id="role" required>
+            <option value="">-- Select Role --</option>
+            <option value="ADMIN">Admin</option>
+            <option value="COMPANY">Company</option>
+            <option value="STUDENT">Student</option>
+        </select>
+
+        <label>Email</label>
+        <input type="email" id="email"
+               placeholder="Enter Email" required>
+
+        <label>Password</label>
+        <input type="password" id="password"
+               placeholder="Enter Password" required>
+
+        <div class="show-password">
+            <input type="checkbox" id="showPassword">
+            <label for="showPassword">Show Password</label>
+        </div>
+
+        <button type="submit" id="loginBtn">Login</button>
+
+        <p id="message"></p>
+
+    </form>
+
+    <div class="login-link">
+        New User ?
+        <a href="registar.html">Sign Up</a>
+    </div>
+
+</div>
+
+<script>
+
+// Show / Hide Password
+document.getElementById("showPassword")
+.addEventListener("change", function() {
+
+    document.getElementById("password").type =
+        this.checked ? "text" : "password";
+
+});
+
+// Login Function
+document.getElementById("loginForm")
+.addEventListener("submit", async function(event) {
+
+    event.preventDefault();
+
+    const role = document.getElementById("role").value;
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const message = document.getElementById("message");
+    const loginBtn = document.getElementById("loginBtn");
+
+    message.style.color = "blue";
+    message.innerText = "Please wait...";
+
+    loginBtn.disabled = true;
+
+    try {
+
+        const response = await fetch(
+            "http://localhost:8080/api/auth/login",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || "Invalid Email or Password");
+        }
+
+        const loggedRole = String(data.role || "").toUpperCase();
+
+        if (loggedRole !== role) {
+            throw new Error("Please select the correct role");
+        }
+
+        // Get user information
+        const userId = data.id;
+        const userName = data.name || data.fullName || "";
+        const userEmail = data.email || email;
+
+        if (!userId) {
+            throw new Error("User ID not received from server");
+        }
+
+        // Clear old login information
+        localStorage.removeItem("userId");
+        localStorage.removeItem("studentId");
+        localStorage.removeItem("userRole");
+
+        // Save common login information
+        localStorage.setItem("userId", userId);
+        localStorage.setItem("userName", userName);
+        localStorage.setItem("userEmail", userEmail);
+        localStorage.setItem("userRole", loggedRole);
+
+        // Save Student ID separately
+        if (loggedRole === "STUDENT") {
+            localStorage.setItem("studentId", userId);
+            localStorage.setItem("studentName", userName);
+        }
+
+        message.style.color = "green";
+        message.innerText = "Login Successful!";
+
+        // Redirect according to role
+        setTimeout(function() {
+
+            if (loggedRole === "ADMIN") {
+
+                window.location.href = "admindashboard.html";
+
+            } else if (loggedRole === "COMPANY") {
+
+                window.location.href = "companydashboard.html";
+
+            } else if (loggedRole === "STUDENT") {
+
+                window.location.href = "studentdashboard.html";
+
+            }
+
+        }, 800);
+
+    } catch (error) {
+
+        message.style.color = "red";
+        message.innerText = error.message;
+
+    } finally {
+
+        loginBtn.disabled = false;
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>

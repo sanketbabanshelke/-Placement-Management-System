@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Management</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f3f8;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        h2 {
+            color: #222;
+        }
+
+        input {
+            width: 95%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+        }
+
+        button {
+            background: blue;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .delete {
+            background: red;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #aaa;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #e5e9f5;
+        }
+
+        #message {
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Company Registration</h2>
+
+    <form id="companyForm">
+
+        <input type="text" id="companyName"
+               placeholder="Company Name" required>
+
+        <input type="email" id="email"
+               placeholder="Company Email" required>
+
+        <input type="text" id="phone"
+               placeholder="Phone Number" required>
+
+        <input type="text" id="location"
+               placeholder="Company Location" required>
+
+        <input type="url" id="website"
+               placeholder="Company Website">
+
+        <button type="submit">Register Company</button>
+
+    </form>
+
+    <p id="message"></p>
+
+    <hr>
+
+    <h2>Registered Companies</h2>
+
+    <button onclick="loadCompanies()">View Companies</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Company Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Location</th>
+                <th>Website</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody id="companyTable"></tbody>
+    </table>
+
+</div>
+
+<script>
+
+const API = "http://localhost:8080/api/companies";
+
+// Register Company
+document.getElementById("companyForm")
+.addEventListener("submit", async function(e) {
+
+    e.preventDefault();
+
+    const company = {
+        companyName: document.getElementById("companyName").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        location: document.getElementById("location").value,
+        website: document.getElementById("website").value
+    };
+
+    try {
+        const response = await fetch(API, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(company)
+        });
+
+        if (!response.ok) {
+            throw new Error("Registration Failed");
+        }
+
+        document.getElementById("message").innerText =
+            "Company Registered Successfully!";
+
+        document.getElementById("companyForm").reset();
+
+        loadCompanies();
+
+    } catch (error) {
+        document.getElementById("message").innerText =
+            error.message;
+    }
+});
+
+
+// Display All Companies
+async function loadCompanies() {
+
+    try {
+        const response = await fetch(API);
+
+        if (!response.ok) {
+            throw new Error("Unable to load companies");
+        }
+
+        const companies = await response.json();
+
+        const table = document.getElementById("companyTable");
+        table.innerHTML = "";
+
+        companies.forEach(company => {
+
+            const row = document.createElement("tr");
+
+            [
+                company.id,
+                company.companyName,
+                company.email,
+                company.phone,
+                company.location,
+                company.website
+            ].forEach(value => {
+
+                const cell = document.createElement("td");
+                cell.textContent = value ?? "";
+                row.appendChild(cell);
+            });
+
+            const actionCell = document.createElement("td");
+
+            const editButton = document.createElement("button");
+            editButton.textContent = "Edit";
+            editButton.onclick = () => editCompany(company.id);
+
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.className = "delete";
+            deleteButton.onclick = () => deleteCompany(company.id);
+
+            actionCell.appendChild(editButton);
+            actionCell.appendChild(deleteButton);
+
+            row.appendChild(actionCell);
+            table.appendChild(row);
+        });
+
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+
+// Edit Company
+async function editCompany(id) {
+
+    try {
+        const response = await fetch(API + "/" + id);
+
+        if (!response.ok) {
+            throw new Error("Company Not Found");
+        }
+
+        const company = await response.json();
+
+        const companyName = prompt("Company Name:", company.companyName);
+        if (companyName === null) return;
+
+        const email = prompt("Email:", company.email);
+        if (email === null) return;
+
+        const phone = prompt("Phone:", company.phone);
+        if (phone === null) return;
+
+        const location = prompt("Location:", company.location);
+        if (location === null) return;
+
+        const website = prompt("Website:", company.website);
+        if (website === null) return;
+
+        const updatedCompany = {
+            companyName,
+            email,
+            phone,
+            location,
+            website
+        };
+
+        const updateResponse = await fetch(API + "/" + id, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updatedCompany)
+        });
+
+        if (!updateResponse.ok) {
+            throw new Error("Update Failed");
+        }
+
+        alert("Company Updated Successfully!");
+        loadCompanies();
+
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+
+// Delete Company
+async function deleteCompany(id) {
+
+    if (!confirm("Are you sure you want to delete this company?")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(API + "/" + id, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            throw new Error("Delete Failed");
+        }
+
+        alert("Company Deleted Successfully!");
+        loadCompanies();
+
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// Load companies when page opens
+loadCompanies();
+
+</script>
+
+</body>
+</html>

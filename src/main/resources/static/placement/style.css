@@ -1,0 +1,289 @@
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 85px;
+}
+
+body {
+    background: #f4f6f9;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.sidebar {
+    top: 80px;
+    border: 1px solid #ddd;
+    position: fixed;
+    
+}
+
+.sidebar h4 {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.sidebar .nav-link {
+    color: #2e465b;
+    padding: 12px;
+    border-radius: 5px;
+}
+
+.sidebar .nav-link:hover {
+    background: #0d6efd;
+    color: white;
+}
+
+section {
+    min-height:100vh ;
+    padding: 25px;
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    scroll-margin-top: 85px;
+}
+
+section h2 {
+    margin-bottom: 25px;
+    font-weight: bold;
+    color: #202830;
+}
+
+.table-responsive {
+    width: 100%;
+}
+
+.dashboard-card {
+    min-height: 130px;
+    border: none;
+    background: #eaf2ff;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.dashboard-card h2 {
+    color: #1d3d6b;
+    margin-top: 15px;
+}
+
+.footer {
+    background: #243f5b;
+    color: white;
+    padding-top: 40px;
+}
+
+.footer-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    padding: 20px 5%;
+}
+
+.footer-section h3 {
+    font-size: 20px;
+    margin-bottom: 18px;
+}
+
+.footer-section p {
+    color: #ccc;
+    line-height: 1.7;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section a {
+    color: #ccc;
+    text-decoration: none;
+}
+
+.footer-section a:hover {
+    color: white;
+}
+
+.footer-bottom {
+    text-align: center;
+    background: #151719;
+    padding: 20px;
+}
+
+.footer-bottom p {
+    margin: 5px;
+    color: #ccc;
+}
+
+@media(max-width: 768px) {
+    .footer-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .sidebar {
+        position: static !important;
+        margin-bottom: 20px;
+    }
+}
+
+@media(max-width: 480px) {
+    .footer-container {
+        grid-template-columns: 1fr;
+    }
+}
+h5{
+    color: white;
+}
+
+a{
+    color: white;
+}
+/* =========================================
+   APPLICATION SECTION STYLING
+   ========================================= */
+
+#application .container {
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+}
+
+#application h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #0d6efd;
+}
+
+#application h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #343a40;
+    margin-top: 20px;
+    margin-bottom: 15px;
+}
+
+/* Form Grid Layout */
+#application .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+#application .form-grid input,
+#application .form-grid select {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    color: #212529;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+#application .form-grid input:focus,
+#application .form-grid select:focus {
+    outline: none;
+    background-color: #ffffff;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+/* Action Buttons (.save, .cancel, .view) */
+#application .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+#application .actions button {
+    padding: 9px 18px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.1s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#application .actions button:active {
+    transform: scale(0.98);
+}
+
+#application .actions button.save {
+    background-color: #198754;
+    color: #ffffff;
+}
+
+#application .actions button.save:hover {
+    background-color: #157347;
+    box-shadow: 0 3px 8px rgba(25, 135, 84, 0.25);
+}
+
+#application .actions button.cancel {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+#application .actions button.cancel:hover {
+    background-color: #5c636a;
+}
+
+#application .actions button.view {
+    background-color: #0d6efd;
+    color: #ffffff;
+}
+
+#application .actions button.view:hover {
+    background-color: #0b5ed7;
+    box-shadow: 0 3px 8px rgba(13, 110, 253, 0.25);
+}
+
+/* Status Feedback Message */
+#application #message {
+    font-size: 0.95rem;
+    font-weight: 600;
+    min-height: 22px;
+    margin: 8px 0 16px;
+}
+
+/* Application Table Styling (Matches Bootstrap Dark Header Tables) */
+#application table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+#application table thead {
+    background-color: #212529;
+    color: #ffffff;
+}
+
+#application table th,
+#application table td {
+    padding: 12px 15px;
+    text-align: left;
+    border: 1px solid #dee2e6;
+    font-size: 0.92rem;
+    vertical-align: middle;
+}
+
+#application table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+#application table tbody tr:hover {
+    background-color: #eef4ff;
+    transition: background-color 0.15s ease;
+}

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Placement Management System</title>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dark bg-dark sticky-top">
+        <div class="container-fluid px-4">
+
+            <h3 class="text-white mb-0">
+                Placement & Training Cell
+            </h3>
+
+
+           <a href="index.html" class="btn btn-danger btn-sm mb-3">
+                            Log Out
+                        </a>
+
+
+        </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="container-fluid mt-4">
+
+        <div class="row">
+
+            <!-- Sidebar -->
+            <div class="col-md-2">
+
+                <div class="sidebar p-3 bg-light rounded position-sticky" style="top: 80px;">
+
+                    <h4>Admin Dashboard</h4>
+
+                    <ul class="nav flex-column">
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="#job">Jobs</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="#company">Companies</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="#application">
+                                Applications
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="#dashboard">
+                                Dashboard
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contact">
+                                Contact Us
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10">
+
+                <!-- JOB SECTION -->
+                <section id="job">
+
+                    <h2>Available Jobs</h2>
+
+                    <div class="table-box">
+
+                        <button class="btn btn-primary btn-sm mb-3" onclick="loadJobs()">
+                            Refresh List
+                        </button>
+                         <button class="btn btn-primary btn-sm mb-3">
+                            <a href="Job.html">Add Job</a>
+                        </button>
+                    </button>
+                        
+                        <div class="table-responsive">
+
+                            <table class="table table-bordered table-striped">
+
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Company</th>
+                                        <th>Job Title</th>
+                                        <th>Location</th>
+                                        <th>Salary</th>
+                                        <th>Vacancies</th>
+                                        <th>Job Type</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="jobTable">
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            Loading Jobs...
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Job Details Modal -->
+                    <div id="viewModal" class="modal" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+
+                        <div class="modal-dialog">
+
+                            <div class="modal-content p-3">
+
+                                <div class="d-flex justify-content-between mb-3">
+
+                                    <h5>Job Details</h5>
+
+                                    <button class="btn btn-danger btn-sm" onclick="closeView()">
+                                        Close
+                                    </button>
+
+                                </div>
+
+                                <div id="jobDetails"></div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- COMPANY SECTION -->
+                <section id="company" class="mt-5">
+
+                    <h2>Registered Companies</h2>
+
+                    <button class="btn btn-primary btn-sm mb-3" onclick="loadCompanies()">
+                        Refresh Companies
+                    </button>
+                     <button class="btn btn-primary btn-sm mb-3">
+                        <a href="company.html">Add Company</a>
+                    </button>
+                   
+
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered table-striped">
+
+                            <thead class="table-dark">
+
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Company Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Location</th>
+                                    <th>Website</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="companyTable">
+
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        Loading Companies...
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
+                <!-- APPLICATION SECTION -->
+
+                <section id="application" class="mt-5">
+
+                    <h2>Student Applications</h2>
+
+                    <button class="btn btn-primary btn-sm mb-3" onclick="loadApplications()">
+                        Refresh Applications
+                    </button>
+                     <button class="btn btn-primary btn-sm mb-3">
+                            <a href="application.html">Apply Job</a>
+                    </button>
+
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered table-striped">
+
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Student ID</th>
+                                    <th>Job ID</th>
+                                    <th>Application Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="applicationTable">
+
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        Loading Applications...
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- DASHBOARD SECTION -->
+                <section id="dashboard" class="mt-5">
+
+                    <h2>Placement Dashboard</h2>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-3">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <h5>Total Students</h5>
+                                    <h2 id="students">0</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <h5>Total Companies</h5>
+                                    <h2 id="companies">0</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <h5>Total Jobs</h5>
+                                    <h2 id="jobs">0</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="card dashboard-card">
+                                <div class="card-body">
+                                    <h5>Total Applications</h5>
+                                    <h2 id="applications">0</h2>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <button class="btn btn-primary mt-3" onclick="loadDashboard()">
+                        Refresh Dashboard
+                    </button>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+    <footer class="footer mt-5" id="contact">
+
+        <div class="footer-container">
+
+            <div class="footer-section">
+
+                <h3>Placement & Training Cell</h3>
+
+                <p>
+                    Connecting students with career opportunities.
+                    Helping students build a successful future through
+                    training, internships and placements.
+                </p>
+
+            </div>
+
+            <div class="footer-section">
+
+                <h3>Quick Links</h3>
+
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="#job">Jobs</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ul>
+
+            </div>
+
+            <div class="footer-section">
+
+                <h3>For Students</h3>
+
+                <ul>
+                    <li>
+                        <a href="student-dashboard.html">
+                            Student Dashboard
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="view-profile.html">My Profile</a>
+                    </li>
+
+                    <li>
+                        <a href="#job">Browse Jobs</a>
+                    </li>
+
+                    <li>
+                        <a href="my-applications.html">
+                            My Applications
+                        </a>
+                    </li>
+                </ul>
+
+            </div>
+
+            <div class="footer-section" id="footerContact">
+
+                <h3>Contact Us</h3>
+
+                <p>Email: placement@college.edu</p>
+                <p>Phone: +91 9876543210</p>
+                <p>Location: Maharashtra, India</p>
+
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+
+            <p>
+                &copy; 2026 Placement & Training Cell.
+                All Rights Reserved.
+            </p>
+
+            <p>Designed & Developed by BCA Students</p>
+
+        </div>
+
+    </footer>
+
+
+    <!-- Bootstrap JS -->
+    <script src="js/bootstrap.bundle.min.js"></script>
+
+    <!-- CUSTOM JAVASCRIPT -->
+    <script src="script.js"></script>
+
+    <!-- View-Only Job Script -->
+    <script>
+
+        const JOBS_API = "http://localhost:8080/api/jobs";
+        const COMPANIES_API = "http://localhost:8080/api/companies";
+        const APPLICATIONS_API = "http://localhost:8080/api/applications";
+        const STUDENTS_API = "http://localhost:8080/api/students";
+
+        // 1. LOAD ALL JOBS
+        async function loadJobs() {
+            const table = document.getElementById("jobTable");
+            try {
+                const response = await fetch(JOBS_API);
+                if (!response.ok) throw new Error("Unable to load jobs");
+
+                const jobs = await response.json();
+                table.innerHTML = "";
+
+                if (jobs.length === 0) {
+                    table.innerHTML = `<tr><td colspan="8" class="text-center">No Jobs Available</td></tr>`;
+                    return;
+                }
+
+                jobs.forEach(job => {
+                    const row = document.createElement("tr");
+                    const values = [
+                        job.id,
+                        job.companyName,
+                        job.jobTitle,
+                        job.location,
+                        job.salary,
+                        job.vacancies,
+                        job.jobType
+                    ];
+
+                    values.forEach(value => {
+                        const cell = document.createElement("td");
+                        cell.textContent = value ?? "";
+                        row.appendChild(cell);
+                    });
+
+                    const actionCell = document.createElement("td");
+                    const viewButton = document.createElement("button");
+                    viewButton.textContent = "View";
+                    viewButton.className = "btn btn-info btn-sm text-white";
+                    viewButton.onclick = () => viewJob(job.id);
+
+                    actionCell.appendChild(viewButton);
+                    row.appendChild(actionCell);
+                    table.appendChild(row);
+                });
+            } catch (error) {
+                table.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // 2. VIEW SINGLE JOB DETAILS
+        async function viewJob(id) {
+            try {
+                const response = await fetch(`${JOBS_API}/${id}`);
+                if (!response.ok) throw new Error("Unable to load job details");
+
+                const job = await response.json();
+                const details = document.getElementById("jobDetails");
+                details.innerHTML = ""; // Clear previous content
+
+                const fields = [
+                    ["ID", job.id],
+                    ["Company", job.companyName],
+                    ["Job Title", job.jobTitle],
+                    ["Location", job.location],
+                    ["Salary", job.salary],
+                    ["Vacancies", job.vacancies],
+                    ["Job Type", job.jobType],
+                    ["Description", job.description ?? "No description provided."]
+                ];
+
+                fields.forEach(([label, val]) => {
+                    const p = document.createElement("p");
+                    const strong = document.createElement("strong");
+                    strong.textContent = `${label}: `;
+                    p.appendChild(strong);
+                    p.appendChild(document.createTextNode(val ?? ""));
+                    details.appendChild(p);
+                });
+
+                document.getElementById("viewModal").style.display = "block";
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        }
+
+        function closeView() {
+            document.getElementById("viewModal").style.display = "none";
+        }
+
+        // 3. LOAD ALL COMPANIES
+        async function loadCompanies() {
+            const table = document.getElementById("companyTable");
+            try {
+                const response = await fetch(COMPANIES_API);
+                if (!response.ok) throw new Error("Unable to load companies");
+
+                const companies = await response.json();
+                table.innerHTML = "";
+
+                if (companies.length === 0) {
+                    table.innerHTML = `<tr><td colspan="6" class="text-center">No Companies Found</td></tr>`;
+                    return;
+                }
+
+                companies.forEach(company => {
+                    const row = document.createElement("tr");
+                    const values = [
+                        company.id,
+                        company.companyName,
+                        company.email,
+                        company.phone,
+                        company.location,
+                        company.website
+                    ];
+
+                    values.forEach(value => {
+                        const cell = document.createElement("td");
+                        cell.textContent = value ?? "";
+                        row.appendChild(cell);
+                    });
+
+                    table.appendChild(row);
+                });
+            } catch (error) {
+                table.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+            }
+        }
+
+        // 4. LOAD ALL APPLICATIONS
+        async function loadApplications() {
+            const table = document.getElementById("applicationTable");
+            try {
+                table.innerHTML = `<tr><td colspan="6" class="text-center">Loading Applications...</td></tr>`;
+                const response = await fetch(APPLICATIONS_API);
+                if (!response.ok) throw new Error("Unable to load applications");
+
+                const applications = await response.json();
+                table.innerHTML = "";
+
+                if (applications.length === 0) {
+                    table.innerHTML = `<tr><td colspan="6" class="text-center">No Applications Found</td></tr>`;
+                    return;
+                }
+
+                applications.forEach(app => {
+                    const row = document.createElement("tr");
+                    const values = [
+                        app.id,
+                        app.studentId,
+                        app.jobId,
+                        app.applicationDate,
+                        app.status
+                    ];
+
+                    values.forEach(value => {
+                        const td = document.createElement("td");
+                        td.textContent = value ?? "";
+                        row.appendChild(td);
+                    });
+
+                    const actions = document.createElement("td");
+
+                    const editButton = document.createElement("button");
+                    editButton.textContent = "Edit";
+                    editButton.className = "btn btn-warning btn-sm me-2";
+                    editButton.onclick = () => {
+                        if (typeof editApplication === "function") editApplication(app.id);
+                        else alert("Edit function not implemented yet.");
+                    };
+
+                    const deleteButton = document.createElement("button");
+                    deleteButton.textContent = "Delete";
+                    deleteButton.className = "btn btn-danger btn-sm";
+                    deleteButton.onclick = () => deleteApplication(app.id);
+
+                    // actions.appendChild(editButton);
+                    // actions.appendChild(deleteButton);
+                    row.appendChild(actions);
+                    table.appendChild(row);
+                });
+            } catch (error) {
+                table.innerHTML = `<tr><td colspan="6" class="text-center text-danger">${error.message}</td></tr>`;
+            }
+        }
+
+        // DELETE APPLICATION HANDLER
+        async function deleteApplication(id) {
+            if (!confirm("Are you sure you want to delete this application?")) return;
+            try {
+                const response = await fetch(`${APPLICATIONS_API}/${id}`, { method: "DELETE" });
+                if (!response.ok) throw new Error("Failed to delete application");
+                loadApplications();
+                loadDashboard();
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        // 5. LOAD DASHBOARD COUNTS
+        async function loadDashboard() {
+            try {
+                const [s, c, j, a] = await Promise.all([
+                    fetch(STUDENTS_API),
+                    fetch(COMPANIES_API),
+                    fetch(JOBS_API),
+                    fetch(APPLICATIONS_API)
+                ]);
+
+                if (!s.ok || !c.ok || !j.ok || !a.ok) {
+                    throw new Error("Unable to load dashboard data");
+                }
+
+                const [students, companies, jobs, applications] = await Promise.all([
+                    s.json(),
+                    c.json(),
+                    j.json(),
+                    a.json()
+                ]);
+
+                document.getElementById("students").textContent = students.length;
+                document.getElementById("companies").textContent = companies.length;
+                document.getElementById("jobs").textContent = jobs.length;
+                document.getElementById("applications").textContent = applications.length;
+            } catch (error) {
+                console.error("Dashboard error:", error);
+            }
+        }
+
+        // INITIALIZE PAGE DATA ONCE
+        window.addEventListener("DOMContentLoaded", () => {
+            loadJobs();
+            loadCompanies();
+            loadApplications();
+            loadDashboard();
+        });
+        document.getElementById("jobForm")
+            .addEventListener("submit", async function (event) {
+
+                event.preventDefault();
+
+                const job = {
+
+                    companyName:
+                        document.getElementById("companyName").value.trim(),
+
+                    jobTitle:
+                        document.getElementById("jobTitle").value.trim(),
+
+                    description:
+                        document.getElementById("description").value.trim(),
+
+                    location:
+                        document.getElementById("location").value.trim(),
+
+                    salary:
+                        document.getElementById("salary").value.trim(),
+
+                    vacancies:
+                        Number(document.getElementById("vacancies").value),
+
+                    jobType:
+                        document.getElementById("jobType").value
+
+                };
+
+                try {
+
+                    let response;
+
+                    if (editingId === null) {
+
+                        response = await fetch(API, {
+
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+
+                            body: JSON.stringify(job)
+
+                        });
+
+                    } else {
+
+                        response = await fetch(API + "/" + editingId, {
+
+                            method: "PUT",
+
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+
+                            body: JSON.stringify(job)
+
+                        });
+
+                    }
+
+                    if (!response.ok) {
+                        throw new Error("Unable to save job");
+                    }
+
+                    alert(
+                        editingId === null
+                            ? "Job Added Successfully!"
+                            : "Job Updated Successfully!"
+                    );
+
+                    resetForm();
+
+                    loadJobs();
+
+                } catch (error) {
+
+                    alert("Error: " + error.message);
+
+                }
+
+            });
+
+
+    </script>
+
+</body>
+
+</html>

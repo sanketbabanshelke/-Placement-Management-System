@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Management Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f1f4f9;
+        }
+
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            background: #172b4d;
+            color: white;
+            position: fixed;
+            padding: 25px 15px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 14px;
+            margin: 8px 0;
+            border-radius: 6px;
+        }
+
+        .sidebar a:hover {
+            background: #31558b;
+        }
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px #0001;
+        }
+
+        .card h3 {
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            font-size: 30px;
+            font-weight: bold;
+            color: #1769aa;
+        }
+
+        @media(max-width: 900px) {
+            .cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width: 600px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <h2>Placement System</h2>
+
+        <a href="dashboard.html">Dashboard</a>
+        <a href="registar.html">Students</a>
+        <a href="company.html">Companies</a>
+        <a href="Job.html">Jobs</a>
+        <a href="application.html">Applications</a>
+    </div>
+
+    <div class="main">
+
+        <div class="header">
+            <h1>Admin Dashboard</h1>
+            <h3>Welcome Admin</h3>
+        </div>
+
+        <div class="cards">
+
+            <div class="card">
+                <h3>Total Students</h3>
+                <p id="students">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Companies</h3>
+                <p id="companies">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Jobs</h3>
+                <p id="jobs">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Total Applications</h3>
+                <p id="applications">0</p>
+            </div>
+
+        </div>
+        <div class="card">
+            <h3>My Profile</h3>
+            <p>Create and manage your student profile.</p>
+            <a href="student-profile.html">Complete Profile</a>
+        </div>
+
+    </div>
+
+    <script>
+        async function loadDashboard() {
+            try {
+                const [s, c, j, a] = await Promise.all([
+                    fetch("http://localhost:8080/api/students"),
+                    fetch("http://localhost:8080/api/companies"),
+                    fetch("http://localhost:8080/api/jobs"),
+                    fetch("http://localhost:8080/api/applications")
+                ]);
+
+                if (!s.ok || !c.ok || !j.ok || !a.ok) {
+                    throw new Error("Unable to load dashboard data");
+                }
+
+                const students = await s.json();
+                const companies = await c.json();
+                const jobs = await j.json();
+                const applications = await a.json();
+
+                document.getElementById("students").textContent = students.length;
+                document.getElementById("companies").textContent = companies.length;
+                document.getElementById("jobs").textContent = jobs.length;
+                document.getElementById("applications").textContent = applications.length;
+
+            } catch (error) {
+                console.error(error);
+                alert("Dashboard data could not be loaded. Check Spring Boot.");
+            }
+        }
+
+        loadDashboard();
+    </script>
+
+</body>
+
+</html>

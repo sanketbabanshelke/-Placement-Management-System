@@ -1,0 +1,330 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Application Management</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            background: #f2f5fa;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #0002;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #243b64;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            margin: 4px;
+        }
+
+        .save { background: #1769aa; }
+        .edit { background: #e49b16; }
+        .delete { background: #d93636; }
+        .view { background: #26945b; }
+        .cancel { background: #666; }
+
+        .actions {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #243b64;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f4f6fa;
+        }
+
+        #message {
+            text-align: center;
+            margin: 12px;
+            font-weight: bold;
+        }
+
+        @media(max-width: 650px) {
+            body { padding: 10px; }
+            .form-grid { grid-template-columns: 1fr; }
+            table { font-size: 12px; }
+            th, td { padding: 7px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Job Application Management</h1>
+
+    <h2 id="formTitle">Add Job Application</h2>
+
+    <div class="form-grid">
+        <input type="number" id="studentId" placeholder="Student ID" min="1">
+        <input type="number" id="jobId" placeholder="Job ID" min="1">
+        <input type="date" id="applicationDate">
+
+        <select id="status">
+            <option value="Applied">Applied</option>
+            <option value="Shortlisted">Shortlisted</option>
+            <option value="Selected">Selected</option>
+            <option value="Rejected">Rejected</option>
+        </select>
+    </div>
+
+    <div class="actions">
+        <button class="save" onclick="saveApplication()">Save Application</button>
+        <button class="cancel" onclick="resetForm()">Cancel</button>
+    </div>
+
+    <p id="message"></p>
+
+    <h2>Application List</h2>
+
+    <div class="actions">
+        <button class="view" onclick="loadApplications()">Refresh List</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Student ID</th>
+                <th>Job ID</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody id="applicationTable"></tbody>
+    </table>
+
+</div>
+
+<script>
+    const API = "http://localhost:8080/api/applications";
+
+    let editId = null;
+
+    async function loadApplications() {
+        try {
+            const response = await fetch(API);
+
+            if (!response.ok) {
+                throw new Error("Unable to load applications");
+            }
+
+            const applications = await response.json();
+            const table = document.getElementById("applicationTable");
+
+            table.innerHTML = "";
+
+            applications.forEach(app => {
+                const row = document.createElement("tr");
+
+                const values = [
+                    app.id,
+                    app.studentId,
+                    app.jobId,
+                    app.applicationDate,
+                    app.status
+                ];
+
+                values.forEach(value => {
+                    const td = document.createElement("td");
+                    td.textContent = value ?? "";
+                    row.appendChild(td);
+                });
+
+                const actions = document.createElement("td");
+
+                const editButton = document.createElement("button");
+                editButton.textContent = "Edit";
+                editButton.className = "edit";
+                editButton.onclick = () => editApplication(app.id);
+
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Delete";
+                deleteButton.className = "delete";
+                deleteButton.onclick = () => deleteApplication(app.id);
+
+                actions.appendChild(editButton);
+                actions.appendChild(deleteButton);
+                row.appendChild(actions);
+
+                table.appendChild(row);
+            });
+
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    }
+
+    async function saveApplication() {
+        const studentId = document.getElementById("studentId").value;
+        const jobId = document.getElementById("jobId").value;
+        const applicationDate = document.getElementById("applicationDate").value;
+        const status = document.getElementById("status").value;
+
+        if (!studentId || !jobId || !applicationDate) {
+            showMessage("Please fill all fields", true);
+            return;
+        }
+
+        const application = {
+            studentId: Number(studentId),
+            jobId: Number(jobId),
+            applicationDate: applicationDate,
+            status: status
+        };
+
+        try {
+            const url = editId ? API + "/" + editId : API;
+            const method = editId ? "PUT" : "POST";
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(application)
+            });
+
+            if (!response.ok) {
+                throw new Error("Unable to save application");
+            }
+
+            showMessage(editId ? "Application Updated Successfully" :
+                "Application Added Successfully");
+
+            resetForm();
+            loadApplications();
+
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    }
+
+    async function editApplication(id) {
+        try {
+            const response = await fetch(API + "/" + id);
+
+            if (!response.ok) {
+                throw new Error("Application not found");
+            }
+
+            const app = await response.json();
+
+            editId = id;
+
+            document.getElementById("studentId").value = app.studentId;
+            document.getElementById("jobId").value = app.jobId;
+            document.getElementById("applicationDate").value = app.applicationDate;
+            document.getElementById("status").value = app.status;
+
+            document.getElementById("formTitle").textContent =
+                "Edit Job Application";
+
+            window.scrollTo({ top: 0, behavior: "smooth" });
+
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    }
+
+    async function deleteApplication(id) {
+        if (!confirm("Are you sure you want to delete this application?")) {
+            return;
+        }
+
+        try {
+            const response = await fetch(API + "/" + id, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                throw new Error("Unable to delete application");
+            }
+
+            showMessage("Application Deleted Successfully");
+            loadApplications();
+
+        } catch (error) {
+            showMessage(error.message, true);
+        }
+    }
+
+    function resetForm() {
+        editId = null;
+
+        document.getElementById("studentId").value = "";
+        document.getElementById("jobId").value = "";
+        document.getElementById("applicationDate").value = "";
+        document.getElementById("status").value = "Applied";
+
+        document.getElementById("formTitle").textContent =
+            "Add Job Application";
+    }
+
+    function showMessage(message, isError = false) {
+        const element = document.getElementById("message");
+        element.textContent = message;
+        element.style.color = isError ? "red" : "green";
+    }
+
+    loadApplications();
+</script>
+
+</body>
+</html>

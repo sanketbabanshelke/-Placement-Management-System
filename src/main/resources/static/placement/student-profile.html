@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Profile</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #eff6ff;
+    padding: 30px 15px;
+}
+
+.container {
+    max-width: 650px;
+    margin: 0 auto 30px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px #0002;
+}
+
+.list-container {
+    max-width: 950px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px #0002;
+}
+
+h2 {
+    text-align: center;
+    color: #1d4ed8;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin: 15px 0 7px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+}
+
+button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 25px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #1d4ed8;
+}
+
+.refresh-btn {
+    width: auto;
+    padding: 8px 16px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 14px;
+    background: #0891b2;
+}
+
+.refresh-btn:hover {
+    background: #0e7490;
+}
+
+#message {
+    text-align: center;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+/* Student List Table */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    border: 1px solid #cbd5e1;
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 14px;
+}
+
+th {
+    background: #1d4ed8;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+.status-msg {
+    text-align: center;
+    color: #64748b;
+    padding: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- Student Profile Form -->
+<div class="container">
+
+    <h2>Student Profile</h2>
+
+    <form id="profileForm">
+
+        <label>Full Name</label>
+        <input type="text" id="fullName" required>
+
+        <label>Email</label>
+        <input type="email" id="email" required>
+
+        <label>Mobile Number</label>
+        <input type="tel" id="phone" required>
+
+        <label>Department</label>
+        <input type="text" id="department" placeholder="Example: BCA" required>
+
+        <label>Graduation Year</label>
+        <input type="number" id="graduationYear" min="2000" max="2100" required>
+
+        <button type="submit">Save Profile</button>
+
+        <p id="message"></p>
+
+    </form>
+
+</div>
+
+<!-- Student List Section -->
+<div class="list-container">
+
+    <h2>Student List</h2>
+
+    <button type="button" class="refresh-btn" onclick="loadStudents()">
+        Refresh List
+    </button>
+
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr>
+                    <th>Student ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Mobile</th>
+                    <th>Department</th>
+                    <th>Graduation Year</th>
+                </tr>
+            </thead>
+            <tbody id="studentTableBody">
+                <tr>
+                    <td colspan="6" class="status-msg">Loading students...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+const API_URL = "http://localhost:8080/api/stdinfo";
+const userId = localStorage.getItem("userId");
+const userRole = localStorage.getItem("userRole");
+
+if (!userId || userRole !== "STUDENT") {
+    window.location.href = "login.html";
+}
+
+document.getElementById("fullName").value =
+    localStorage.getItem("userName") || "";
+
+document.getElementById("email").value =
+    localStorage.getItem("userEmail") || "";
+
+// SAVE STUDENT PROFILE
+document.getElementById("profileForm").addEventListener(
+    "submit", async function(event) {
+
+    event.preventDefault();
+
+    const profileData = {
+        studentId: Number(userId),
+        fullName: document.getElementById("fullName").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        phone: document.getElementById("phone").value.trim(),
+        department: document.getElementById("department").value.trim(),
+        graduationYear: Number(
+            document.getElementById("graduationYear").value
+        ),
+        resumePath: ""
+    };
+
+    const message = document.getElementById("message");
+
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(profileData)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            message.style.color = "red";
+            message.textContent =
+                result.message || "Profile Save Failed";
+            return;
+        }
+
+        message.style.color = "green";
+        message.textContent = "Profile Saved Successfully!";
+
+        // Reload the student list after saving
+        loadStudents();
+
+    } catch (error) {
+        message.style.color = "red";
+        message.textContent = "Server Connection Failed";
+        console.error(error);
+    }
+});
+
+// LOAD STUDENT LIST
+async function loadStudents() {
+    const tbody = document.getElementById("studentTableBody");
+
+    try {
+        const response = await fetch(API_URL);
+
+        if (!response.ok) {
+            throw new Error("Unable to fetch student list");
+        }
+
+        const students = await response.json();
+        tbody.innerHTML = "";
+
+        if (!students || students.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="status-msg">No student profiles found.</td>
+                </tr>
+            `;
+            return;
+        }
+
+        students.forEach(student => {
+            const row = document.createElement("tr");
+
+            const fields = [
+                student.studentId ?? student.id,
+                student.fullName,
+                student.email,
+                student.phone,
+                student.department,
+                student.graduationYear
+            ];
+
+            fields.forEach(value => {
+                const td = document.createElement("td");
+                td.textContent = value ?? "";
+                row.appendChild(td);
+            });
+
+            tbody.appendChild(row);
+        });
+
+    } catch (error) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="status-msg" style="color: red;">
+                    Error loading students: ${error.message}
+                </td>
+            </tr>
+        `;
+        console.error(error);
+    }
+}
+
+// Load list automatically on page open
+loadStudents();
+</script>
+
+</body>
+</html>

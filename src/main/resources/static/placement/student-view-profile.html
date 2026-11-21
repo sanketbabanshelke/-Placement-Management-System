@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Student Profile</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #eff6ff;
+            padding: 30px 15px;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px #0002;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1d4ed8;
+            margin-bottom: 25px;
+        }
+
+        .profile-row {
+            padding: 15px 5px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .profile-row strong {
+            color: #334155;
+        }
+
+        .profile-row span {
+            color: #475569;
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .edit {
+            background: #2563eb;
+        }
+
+        .back {
+            background: #64748b;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 20px;
+            color: #dc2626;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>My Student Profile</h2>
+
+        <div class="profile-row">
+            <strong>Student ID</strong>
+            <span id="studentId">Loading...</span>
+        </div>
+
+        <div class="profile-row">
+            <strong>Full Name</strong>
+            <span id="fullName">Loading...</span>
+        </div>
+
+        <div class="profile-row">
+            <strong>Email</strong>
+            <span id="email">Loading...</span>
+        </div>
+
+        <div class="profile-row">
+            <strong>Phone</strong>
+            <span id="phone">Loading...</span>
+        </div>
+
+        <div class="profile-row">
+            <strong>Department</strong>
+            <span id="department">Loading...</span>
+        </div>
+
+        <div class="profile-row">
+            <strong>Graduation Year</strong>
+            <span id="graduationYear">Loading...</span>
+        </div>
+
+        <div class="profile-row">
+            <strong>Resume Path</strong>
+            <span id="resumePath">Not uploaded</span>
+        </div>
+
+        <div id="message"></div>
+
+        <div class="buttons">
+            <button class="edit" onclick="window.location.href='student-edit-profile.html'">
+                Edit Profile
+            </button>
+            <button class="back" onclick="history.back()">Back</button>
+        </div>
+
+    </div>
+
+    <script>
+        const userId = localStorage.getItem("userId");
+        const userRole = localStorage.getItem("userRole");
+
+        if (!userId || userRole !== "STUDENT") {
+            window.location.href = "login.html";
+        }
+
+        async function loadProfile() {
+
+            try {
+                const response = await fetch(
+                    "http://localhost:8080/api/stdinfo/student/" + encodeURIComponent(userId)
+                );
+
+                if (!response.ok) {
+                    document.getElementById("message").textContent =
+                        "Student Profile Not Found";
+                    return;
+                }
+
+                const data = await response.json();
+
+                document.getElementById("studentId").textContent =
+                    data.studentId ?? "";
+
+                document.getElementById("fullName").textContent =
+                    data.fullName ?? "";
+
+                document.getElementById("email").textContent =
+                    data.email ?? "";
+
+                document.getElementById("phone").textContent =
+                    data.phone ?? "";
+
+                document.getElementById("department").textContent =
+                    data.department ?? "";
+
+                document.getElementById("graduationYear").textContent =
+                    data.graduationYear ?? "";
+
+                document.getElementById("resumePath").textContent =
+                    data.resumePath || "Not uploaded";
+
+                localStorage.setItem("profileId", data.id);
+
+            } catch (error) {
+                document.getElementById("message").textContent =
+                    "Server Connection Failed";
+                console.error(error);
+            }
+        }
+
+        loadProfile();
+    </script>
+
+</body>
+
+</html>
